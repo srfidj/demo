@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>JSON Parser</title>
+</head>
+<body>
+    <div class="container">
+        <h1>JSON Parser</h1>
+        <div class="input-section">
+            <div class="url-input-container">
+                <input type="url" id="apiUrl" placeholder="Enter API URL..." class="api-input">
+                <input type="password" id="apiKey" placeholder="Enter API Key (optional)..." class="api-input">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="useCorsProxy" class="cors-checkbox">
+                    <label for="useCorsProxy">Use CORS proxy (for APIs that block browser requests)</label>
+                </div>
+                <button id="fetchButton" class="action-button">Fetch JSON</button>
+            </div>
+            <div class="or-divider">
+                <span>OR</span>
+            </div>
+            <textarea id="jsonInput" placeholder="Enter JSON here..." rows="10"></textarea>
+            <button id="parseButton" class="action-button">Parse JSON</button>
+        </div>
+        <div id="output"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
