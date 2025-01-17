@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RFID Solutions Quote Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <img src="logo.svg" alt="Company Logo" class="logo">
+            </div>
+            <h1>RFID Solutions Quote Generator</h1>
+        </header>
+
+        <main>
+            <section class="quote-section">
+                <h2>Your Quote</h2>
+                <div class="cart-container">
+                    <div class="base-offer">
+                        <h3>Base Offer</h3>
+                        <div class="cart-items" id="baseOfferItems">
+                            <!-- Base offer items will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="add-ons">
+                        <h3>Available Add-ons</h3>
+                        <div class="add-ons-grid" id="addOnsGrid">
+                            <!-- Add-on items will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="cart-summary">
+                        <div class="summary-content">
+                            <div class="summary-header">
+                                <img src="logo.svg" alt="Company Logo" class="summary-logo" crossorigin="anonymous">
+                                <h3>Quote Summary</h3>
+                            </div>
+                            <div id="cartItems">
+                                <!-- Cart items will be populated by JavaScript -->
+                            </div>
+                            <div class="total-section">
+                                <div class="total-line subtotal">
+                                    <span>One-Time Costs:</span>
+                                    <span id="oneTimeTotal">$0.00</span>
+                                </div>
+                                <div class="total-line subtotal">
+                                    <span>Annual Total:</span>
+                                    <span id="annualTotal">$0.00</span>
+                                </div>
+                                <div class="total-line grand-total">
+                                    <span>Total Due Today:</span>
+                                    <span id="grandTotal">$0.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="export-buttons">
+                        <button id="exportPDF" class="export-btn"><i class="fas fa-file-pdf"></i> Export to PDF</button>
+                        <button id="exportImage" class="export-btn"><i class="fas fa-file-image"></i> Export as Image</button>
+                        <button id="exportExcel" class="export-btn"><i class="fas fa-file-excel"></i> Export to Excel</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
