@@ -189,62 +189,52 @@ $(document).ready(function() {
 
     function exportToImage() {
         const element = document.querySelector('.cart-summary');
-        const logo = element.querySelector('.summary-logo');
 
-        // Create a temporary canvas to handle the logo
-        const tempCanvas = document.createElement('canvas');
-        const tempCtx = tempCanvas.getContext('2d');
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
+        // First, create a clone of the element
+        const clone = element.cloneNode(true);
+        clone.style.position = 'absolute';
+        clone.style.left = '-9999px';
+        clone.style.background = '#ffffff';
+        document.body.appendChild(clone);
 
-        // Load the logo first
-        img.onload = function() {
-            // Now capture the entire element
-            html2canvas(element, {
+        // Wait for any images to load
+        const images = clone.getElementsByTagName('img');
+        const imagePromises = Array.from(images).map(img => {
+            if (img.complete) return Promise.resolve();
+            return new Promise(resolve => {
+                img.onload = resolve;
+                img.onerror = resolve;
+            });
+        });
+
+        // Once all images are loaded, capture the element
+        Promise.all(imagePromises).then(() => {
+            html2canvas(clone, {
                 scale: 2,
                 allowTaint: true,
                 useCORS: true,
                 backgroundColor: '#ffffff',
-                imageTimeout: 0,
-                removeContainer: true,
-                foreignObjectRendering: true
-            }).then(function(canvas) {
-                try {
+                logging: true,
+                width: element.offsetWidth,
+                height: element.offsetHeight
+            }).then(canvas => {
+                // Convert the canvas to a PNG
+                canvas.toBlob(blob => {
+                    // Create download link
+                    const url = window.URL.createObjectURL(blob);
                     const link = document.createElement('a');
+                    link.href = url;
                     link.download = 'RFID-Quote.png';
-                    link.href = canvas.toDataURL('image/png');
                     document.body.appendChild(link);
                     link.click();
+                    
+                    // Cleanup
                     document.body.removeChild(link);
-                } catch (e) {
-                    console.error('Error saving image:', e);
-                }
-            }).catch(function(error) {
-                console.error('Error generating image:', error);
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(clone);
+                }, 'image/png');
             });
-        };
-
-        img.onerror = function() {
-            console.error('Error loading logo image');
-            // Try to generate image without logo
-            html2canvas(element, {
-                scale: 2,
-                allowTaint: true,
-                useCORS: true,
-                backgroundColor: '#ffffff',
-                removeContainer: true
-            }).then(function(canvas) {
-                const link = document.createElement('a');
-                link.download = 'RFID-Quote.png';
-                link.href = canvas.toDataURL('image/png');
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            });
-        };
-
-        // Set the source last
-        img.src = logo.src;
+        });
     }
 
     function exportToExcel() {
