@@ -12,46 +12,47 @@ $(document).ready(function() {
             id: 'base2',
             title: 'Setup, Training & Onboarding',
             description: 'One-Time Setup, Training & Onboarding',
-            price: 500.00,
-            period: ''
+            price: 500.00
         }
     ];
 
     const addOns = [
         {
-            id: 'addon1',
+            id: 'printer-bundle',
             title: 'FREE RFID Desktop Printer + Discounted Annual Service Plan',
-            description: 'FREE RFID Desktop Printer + Discounted Annual Service Plan | Value up to $3887',
-            price: 1990.00,
-            period: 'year'
+            description: 'Desktop printer with annual service plan.',
+            price: 1999.99,
+            period: 'year',
+            images: ['printer.png']
         },
         {
-            id: 'addon2',
+            id: 'reader-bundle',
             title: 'FREE RFID Reader + Discounted Annual Service Plan',
-            description: 'FREE RFID Reader + Discounted Annual Service Plan | Value up to $3663',
-            price: 1990.00,
-            period: 'year'
+            description: 'RFID reader with annual service plan.',
+            price: 1499.99,
+            period: 'year',
+            images: ['reader.png']
         },
         {
-            id: 'addon3',
+            id: 'badge-labels',
             title: '1 Roll | 1,500 qty Badge RFID Labels + Ribbon Bundle | Small Core',
-            description: '1,500qty RFID Badge Size Labels | 2.38" x 1.38" (60 X 35MM) | 1" Small Core + 1 Roll Ribbon',
-            price: 141.00,
-            period: ''
+            description: 'Badge RFID labels with ribbon.',
+            price: 599.99,
+            images: ['badge.png', 'ribbon.png']
         },
         {
-            id: 'addon4',
+            id: 'retail-labels',
             title: '1 Roll | 2,000 qty Retail RFID Labels + Ribbon Bundle | Small Core',
-            description: '2,000qty RFID Retail Size Labels | 1.85"x 0.91" (47 x 23mm) | 1" Small Core + 1 Roll Ribbon',
-            price: 181.00,
-            period: ''
+            description: 'Retail RFID labels with ribbon.',
+            price: 699.99,
+            images: ['retail.png', 'ribbon.png']
         },
         {
-            id: 'addon5',
+            id: 'jewelry-labels',
             title: '1 Roll | 2500qty Jewelry C Labels + Ribbon Bundle | Small Core',
-            description: '2500qty Jewelry C Labels | folded size 0.5" x 1" (13 x 25mm) | 1" Small Core + 1 Roll Ribbon',
-            price: 296.00,
-            period: ''
+            description: 'Jewelry RFID labels with ribbon.',
+            price: 799.99,
+            images: ['jewelry.png', 'ribbon.png']
         }
     ];
 
@@ -61,13 +62,18 @@ $(document).ready(function() {
         total: 0
     };
 
+    // Format number with commas
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
     // Initialize base offer items
     function initializeBaseOffer() {
         const baseOfferHtml = baseOffer.map(item => `
             <div class="base-item" data-id="${item.id}">
                 <div class="product-title">${item.title}</div>
                 <div class="product-description">${item.description}</div>
-                <div class="product-price">$${item.price.toFixed(2)}${item.period ? ' / ' + item.period : ''}</div>
+                <div class="product-price">$${formatNumber(item.price.toFixed(2))}${item.period ? ' / ' + item.period : ''}</div>
             </div>
         `).join('');
         
@@ -90,12 +96,15 @@ $(document).ready(function() {
     function initializeAddOns() {
         const addOnsHtml = addOns.map(item => `
             <div class="product-card" data-id="${item.id}">
+                <div class="product-images">
+                    ${item.images.map(img => `<img src="images/${img}" alt="${img.split('.')[0]}" class="product-image">`).join('')}
+                </div>
                 <div class="product-title">${item.title}</div>
                 <div class="product-description">${item.description}</div>
-                <div class="product-price">$${item.price.toFixed(2)}${item.period ? ' / ' + item.period : ''}</div>
+                <div class="product-price">$${formatNumber(item.price.toFixed(2))}${item.period ? ' / ' + item.period : ''}</div>
                 <div class="quantity-controls">
                     <button class="quantity-btn decrease" data-id="${item.id}">-</button>
-                    <span class="quantity-display" data-id="${item.id}">0</span>
+                    <input type="number" class="quantity-input" data-id="${item.id}" value="0" min="0" max="999">
                     <button class="quantity-btn increase" data-id="${item.id}">+</button>
                 </div>
             </div>
@@ -109,35 +118,41 @@ $(document).ready(function() {
         let oneTimeTotal = 0;
         let annualTotal = 0;
 
-        const cartItemsHtml = Object.values(cart.items)
+        const cartItemsHtml = [];
+        
+        // Add base offer if quantity > 0
+        Object.values(cart.items)
             .filter(item => item.quantity > 0)
-            .map(item => {
+            .forEach(item => {
                 const subtotal = item.price * item.quantity;
                 if (item.period === 'year') {
                     annualTotal += subtotal;
                 } else {
                     oneTimeTotal += subtotal;
                 }
-                return `
+                cartItemsHtml.push(`
                     <div class="cart-item">
                         <div class="item-details">
                             <div class="item-title">${item.title}${item.quantity > 1 ? ' <span class="quantity-badge">x' + item.quantity + '</span>' : ''}</div>
-                            <div class="item-price">$${subtotal.toFixed(2)}${item.period ? ' / ' + item.period : ''}</div>
+                            <div class="item-price">$${formatNumber(subtotal.toFixed(2))}${item.period ? ' / ' + item.period : ''}</div>
                         </div>
                     </div>
-                `;
-            }).join('');
+                `);
+            });
 
         const grandTotal = oneTimeTotal + annualTotal;
 
-        $('#cartItems').html(cartItemsHtml);
-        $('#oneTimeTotal').text('$' + oneTimeTotal.toFixed(2));
-        $('#annualTotal').text('$' + annualTotal.toFixed(2));
-        $('#grandTotal').text('$' + grandTotal.toFixed(2));
+        $('#cartItems').html(cartItemsHtml.join(''));
+        $('#oneTimeTotal').text('$' + formatNumber(oneTimeTotal.toFixed(2)));
+        $('#annualTotal').text('$' + formatNumber(annualTotal.toFixed(2)));
+        $('#grandTotal').text('$' + formatNumber(grandTotal.toFixed(2)));
 
-        cart.oneTimeTotal = oneTimeTotal;
-        cart.annualTotal = annualTotal;
-        cart.grandTotal = grandTotal;
+        cart.total = grandTotal;
+
+        // Update all quantity inputs
+        Object.entries(cart.items).forEach(([id, item]) => {
+            $(`.quantity-input[data-id="${id}"]`).val(item.quantity);
+        });
     }
 
     // Event handlers
@@ -156,7 +171,6 @@ $(document).ready(function() {
         }
         
         cart.items[id].quantity++;
-        $(`.quantity-display[data-id="${id}"]`).text(cart.items[id].quantity);
         updateCart();
     });
 
@@ -164,8 +178,40 @@ $(document).ready(function() {
         const id = $(this).data('id');
         if (cart.items[id] && cart.items[id].quantity > 0) {
             cart.items[id].quantity--;
-            $(`.quantity-display[data-id="${id}"]`).text(cart.items[id].quantity);
             updateCart();
+        }
+    });
+
+    $(document).on('change', '.quantity-input', function() {
+        const id = $(this).data('id');
+        const item = addOns.find(item => item.id === id);
+        const value = parseInt($(this).val()) || 0;
+        
+        // Ensure value is non-negative
+        const quantity = Math.max(0, value);
+        $(this).val(quantity);
+        
+        if (quantity > 0 && !cart.items[id]) {
+            cart.items[id] = {
+                id: id,
+                title: item.title,
+                price: item.price,
+                quantity: 0,
+                period: item.period
+            };
+        }
+        
+        if (cart.items[id]) {
+            cart.items[id].quantity = quantity;
+            updateCart();
+        }
+    });
+
+    // Handle invalid input
+    $(document).on('input', '.quantity-input', function() {
+        const value = $(this).val();
+        if (value !== '' && !(/^\d*$/.test(value))) {
+            $(this).val(value.replace(/[^\d]/g, ''));
         }
     });
 
@@ -223,9 +269,8 @@ $(document).ready(function() {
 
         // Add totals
         data.push([]);
-        data.push(['One-Time Costs:', '', `$${cart.oneTimeTotal.toFixed(2)}`]);
-        data.push(['Annual Total:', '', `$${cart.annualTotal.toFixed(2)}`]);
-        data.push(['Total Due Today:', '', `$${cart.grandTotal.toFixed(2)}`]);
+        data.push(['One-Time Costs:', '', `$${cart.total.toFixed(2)}`]);
+        data.push(['Total Due Today:', '', `$${cart.total.toFixed(2)}`]);
 
         const worksheet = XLSX.utils.aoa_to_sheet(data);
 
