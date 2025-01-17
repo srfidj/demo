@@ -189,51 +189,14 @@ $(document).ready(function() {
 
     function exportToImage() {
         const element = document.querySelector('.cart-summary');
-
-        // First, create a clone of the element
-        const clone = element.cloneNode(true);
-        clone.style.position = 'absolute';
-        clone.style.left = '-9999px';
-        clone.style.background = '#ffffff';
-        document.body.appendChild(clone);
-
-        // Wait for any images to load
-        const images = clone.getElementsByTagName('img');
-        const imagePromises = Array.from(images).map(img => {
-            if (img.complete) return Promise.resolve();
-            return new Promise(resolve => {
-                img.onload = resolve;
-                img.onerror = resolve;
-            });
-        });
-
-        // Once all images are loaded, capture the element
-        Promise.all(imagePromises).then(() => {
-            html2canvas(clone, {
-                scale: 2,
-                allowTaint: true,
-                useCORS: true,
-                backgroundColor: '#ffffff',
-                logging: true,
-                width: element.offsetWidth,
-                height: element.offsetHeight
-            }).then(canvas => {
-                // Convert the canvas to a PNG
-                canvas.toBlob(blob => {
-                    // Create download link
-                    const url = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = 'RFID-Quote.png';
-                    document.body.appendChild(link);
-                    link.click();
-                    
-                    // Cleanup
-                    document.body.removeChild(link);
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(clone);
-                }, 'image/png');
-            });
+        html2canvas(element, {
+            scale: 2,
+            backgroundColor: '#ffffff'
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'RFID-Quote.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
         });
     }
 
