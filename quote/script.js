@@ -117,34 +117,99 @@ $(document).ready(function() {
     function updateCart() {
         let oneTimeTotal = 50; // Including $50 shipping and handling charge
         let annualTotal = 0;
+        let setupItem = null;
+        let pilotBundle = null;
+        let servicePlans = [];
+        let otherItems = [];
 
         const cartItemsHtml = [];
         
-        // Add base offer if quantity > 0
+        // First pass: categorize items
         Object.values(cart.items)
             .filter(item => item.quantity > 0)
             .forEach(item => {
                 const subtotal = item.price * item.quantity;
-                if (item.period === 'year') {
+                const cartItem = {
+                    title: item.title,
+                    price: subtotal,
+                    period: item.period,
+                    quantity: item.quantity
+                };
+
+                if (item.id === 'base2') {
+                    setupItem = cartItem;
+                    oneTimeTotal += subtotal;
+                } else if (item.id === 'base1') {
+                    pilotBundle = cartItem;
+                    annualTotal += subtotal;
+                } else if (item.id === 'printer-bundle' || item.id === 'reader-bundle') {
+                    servicePlans.push(cartItem);
                     annualTotal += subtotal;
                 } else {
-                    oneTimeTotal += subtotal;
+                    otherItems.push(cartItem);
+                    if (item.period === 'year') {
+                        annualTotal += subtotal;
+                    } else {
+                        oneTimeTotal += subtotal;
+                    }
                 }
-                cartItemsHtml.push(`
-                    <div class="cart-item">
-                        <div class="item-details">
-                            <div class="item-title">${item.title}${item.quantity > 1 ? ' <span class="quantity-badge">x' + item.quantity + '</span>' : ''}</div>
-                            <div class="item-price">$${formatNumber(subtotal.toFixed(2))}${item.period ? ' / ' + item.period : ''}</div>
-                        </div>
-                    </div>
-                `);
             });
 
-        // Add shipping and handling after base items
+        // Add items in the desired order
+        // 1. Pilot RFID Bundle
+        if (pilotBundle) {
+            cartItemsHtml.push(`
+                <div class="cart-item">
+                    <div class="item-details">
+                        <div class="item-title">${pilotBundle.title}${pilotBundle.quantity > 1 ? ' <span class="quantity-badge">x' + pilotBundle.quantity + '</span>' : ''}</div>
+                        <div class="item-price">$${formatNumber(pilotBundle.price.toFixed(2))}${pilotBundle.period ? ' / ' + pilotBundle.period : ''}</div>
+                    </div>
+                </div>
+            `);
+        }
+
+        // 2. Service Plans (Printer and Reader bundles)
+        servicePlans.forEach(item => {
+            cartItemsHtml.push(`
+                <div class="cart-item">
+                    <div class="item-details">
+                        <div class="item-title">${item.title}${item.quantity > 1 ? ' <span class="quantity-badge">x' + item.quantity + '</span>' : ''}</div>
+                        <div class="item-price">$${formatNumber(item.price.toFixed(2))}${item.period ? ' / ' + item.period : ''}</div>
+                    </div>
+                </div>
+            `);
+        });
+
+        // 3. Other items
+        otherItems.forEach(item => {
+            cartItemsHtml.push(`
+                <div class="cart-item">
+                    <div class="item-details">
+                        <div class="item-title">${item.title}${item.quantity > 1 ? ' <span class="quantity-badge">x' + item.quantity + '</span>' : ''}</div>
+                        <div class="item-price">$${formatNumber(item.price.toFixed(2))}${item.period ? ' / ' + item.period : ''}</div>
+                    </div>
+                </div>
+            `);
+        });
+
+        // 4. Setup and Training
+        if (setupItem) {
+            cartItemsHtml.push(`
+                <div class="cart-item">
+                    <div class="item-details">
+                        <div class="item-title">${setupItem.title}</div>
+                        <div class="item-price">$${formatNumber(setupItem.price.toFixed(2))}${setupItem.period ? ' / ' + setupItem.period : ''}</div>
+                    </div>
+                </div>
+            `);
+        }
+
+        // 5. Shipping and Handling
         cartItemsHtml.push(`
             <div class="cart-item">
                 <div class="item-details">
-                    <div class="item-title">Shipping and Handling</div>
+                    <div class="item-title">Shipping & Handling</div>
+                    <div class="item-subtext">Postage over $50 will be billed separately.</div>
                     <div class="item-price">$50.00</div>
                 </div>
             </div>
@@ -230,7 +295,7 @@ $(document).ready(function() {
         const element = document.querySelector('.cart-summary');
         const opt = {
             margin: 10,
-            filename: 'RFID-Quote.pdf',
+            filename: 'SimpleRFID-Quote.pdf',
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { 
                 scale: 2,
@@ -250,7 +315,7 @@ $(document).ready(function() {
             backgroundColor: '#ffffff'
         }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'RFID-Quote.png';
+            link.download = 'SimpleRFID-Quote.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
         });
@@ -289,7 +354,7 @@ $(document).ready(function() {
         worksheet['!cols'] = cols;
 
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Quote');
-        XLSX.writeFile(workbook, 'RFID-Quote.xlsx');
+        XLSX.writeFile(workbook, 'SimpleRFID-Quote.xlsx');
     }
 
     // Event listeners for export buttons

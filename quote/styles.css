@@ -232,6 +232,13 @@ h3 {
     font-weight: 600;
 }
 
+.item-subtext {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 0.2rem;
+    font-style: italic;
+}
+
 .total-section {
     margin-top: 1.5rem;
     padding-top: 1.5rem;
