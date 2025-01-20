@@ -21,7 +21,7 @@ $(document).ready(function() {
             id: 'printer-bundle',
             title: 'FREE RFID Desktop Printer + Discounted Annual Service Plan',
             description: 'Desktop printer with annual service plan.',
-            price: 1999.99,
+            price: 1990.00,
             period: 'year',
             images: ['printer.png']
         },
@@ -29,7 +29,7 @@ $(document).ready(function() {
             id: 'reader-bundle',
             title: 'FREE RFID Reader + Discounted Annual Service Plan',
             description: 'RFID reader with annual service plan.',
-            price: 1999.99,
+            price: 1990.00,
             period: 'year',
             images: ['reader.png']
         },
@@ -37,21 +37,21 @@ $(document).ready(function() {
             id: 'badge-labels',
             title: '1 Roll | 1,500 qty Badge RFID Labels + Ribbon Bundle | Small Core',
             description: 'Badge RFID labels with ribbon.',
-            price: 599.99,
+            price: 141.00,
             images: ['badge.png', 'ribbon.png']
         },
         {
             id: 'retail-labels',
             title: '1 Roll | 2,000 qty Retail RFID Labels + Ribbon Bundle | Small Core',
             description: 'Retail RFID labels with ribbon.',
-            price: 699.99,
+            price: 181.00,
             images: ['retail.png', 'ribbon.png']
         },
         {
             id: 'jewelry-labels',
             title: '1 Roll | 2500qty Jewelry C Labels + Ribbon Bundle | Small Core',
             description: 'Jewelry RFID labels with ribbon.',
-            price: 799.99,
+            price: 296.00,
             images: ['jewelry.png', 'ribbon.png']
         }
     ];
@@ -115,7 +115,7 @@ $(document).ready(function() {
 
     // Update cart display
     function updateCart() {
-        let oneTimeTotal = 0;
+        let oneTimeTotal = 50; // Including $50 shipping and handling charge
         let annualTotal = 0;
 
         const cartItemsHtml = [];
@@ -139,6 +139,16 @@ $(document).ready(function() {
                     </div>
                 `);
             });
+
+        // Add shipping and handling after base items
+        cartItemsHtml.push(`
+            <div class="cart-item">
+                <div class="item-details">
+                    <div class="item-title">Shipping and Handling</div>
+                    <div class="item-price">$50.00</div>
+                </div>
+            </div>
+        `);
 
         const grandTotal = oneTimeTotal + annualTotal;
 
