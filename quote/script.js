@@ -29,7 +29,7 @@ $(document).ready(function() {
             id: 'reader-bundle',
             title: 'FREE RFID Reader + Discounted Annual Service Plan',
             description: 'RFID reader with annual service plan.',
-            price: 1499.99,
+            price: 1999.99,
             period: 'year',
             images: ['reader.png']
         },
